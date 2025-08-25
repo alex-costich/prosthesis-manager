@@ -86,6 +86,12 @@ android {
         versionName "1.0"
     }
     signingConfigs {
+        release {
+            storeFile file('prosthesisApp.keystore')
+            storePassword '123456'
+            keyAlias 'prosthesisApp'
+            keyPassword '123456'
+        }
         debug {
             storeFile file('debug.keystore')
             storePassword 'android'
@@ -100,7 +106,8 @@ android {
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
+            // signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }

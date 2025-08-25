@@ -1,27 +1,45 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import React, { useState } from 'react';
+import { SafeAreaView, StyleSheet } from 'react-native';
+import Hand from './components/Hand';
+import EMGChart from './components/EMGChart';
+import SliderBlock from './components/SliderBlock';
+import ConnectionHandler from './components/ConnectionHandler';
 
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
+type FingerName = 'pinky' | 'ring' | 'middle' | 'pointer' | 'thumb';
 
-function App() {
-  const isDarkMode = useColorScheme() === 'dark';
+const App = () => {
+  const [fingerInputValues, setFingerInputValues] = useState<
+    Record<FingerName, number>
+  >({
+    pinky: 0,
+    ring: 0,
+    middle: 0,
+    pointer: 0,
+    thumb: 0,
+  });
+
+  // console.log(fingerInputValues);
 
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <NewAppScreen templateFileName="App.tsx" />
-    </View>
+    <SafeAreaView style={styles.container}>
+      <ConnectionHandler />
+      <Hand inputData={fingerInputValues} />
+      <SliderBlock
+        values={fingerInputValues}
+        setValues={setFingerInputValues}
+      />
+      <EMGChart />
+    </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 40,
+    padding: 20,
   },
 });
 
