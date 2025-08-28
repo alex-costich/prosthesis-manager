@@ -1,46 +1,20 @@
-import React, { useState } from 'react';
-import { SafeAreaView, StyleSheet } from 'react-native';
-import Hand from './components/Hand';
-import EMGChart from './components/EMGChart';
-import SliderBlock from './components/SliderBlock';
-import ConnectionHandler from './components/ConnectionHandler';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import Connect from './src/pages/Connect';
+import Dashboard from './src/pages/Dashboard';
+import { BleProvider } from './src/context/BleContext';
 
-type FingerName = 'pinky' | 'ring' | 'middle' | 'pointer' | 'thumb';
+const Stack = createNativeStackNavigator();
 
-const App = () => {
-  const [fingerInputValues, setFingerInputValues] = useState<
-    Record<FingerName, number>
-  >({
-    pinky: 0,
-    ring: 0,
-    middle: 0,
-    pointer: 0,
-    thumb: 0,
-  });
-
-  // console.log(fingerInputValues);
-
+export default function App() {
   return (
-    <SafeAreaView style={styles.container}>
-      <ConnectionHandler />
-      <Hand inputData={fingerInputValues} />
-      <SliderBlock
-        values={fingerInputValues}
-        setValues={setFingerInputValues}
-      />
-      <EMGChart />
-    </SafeAreaView>
+    <BleProvider>
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="Connect" component={Connect} />
+          <Stack.Screen name="Dashboard" component={Dashboard} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </BleProvider>
   );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 40,
-    padding: 20,
-  },
-});
-
-export default App;
+}
