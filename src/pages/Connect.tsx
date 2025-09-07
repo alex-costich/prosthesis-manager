@@ -19,7 +19,7 @@ type RootStackParamList = {
   Dashboard: undefined;
 };
 
-const SIMULATE_CONNECTION = false; // <-- toggle simulation
+const SIMULATE_CONNECTION = true; // <-- toggle simulation
 
 const FLICKER_COUNT = 2;
 const FLICKER_DURATION = 150;

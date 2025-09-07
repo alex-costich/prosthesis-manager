@@ -1,5 +1,12 @@
-import React, { useRef, useState } from 'react';
-import { ScrollView, View, Dimensions, StyleSheet } from 'react-native';
+import React, { useRef, useState, useEffect } from 'react';
+import {
+  ScrollView,
+  View,
+  Dimensions,
+  StyleSheet,
+  TouchableOpacity,
+  Animated,
+} from 'react-native';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -11,11 +18,29 @@ interface CarouselProps {
 export default function Carousel({ slides, height }: CarouselProps) {
   const scrollRef = useRef<ScrollView>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const animatedValues = useRef(
+    slides.map(() => new Animated.Value(0)),
+  ).current;
 
   const onScroll = (event: any) => {
     const index = Math.round(event.nativeEvent.contentOffset.x / screenWidth);
     setCurrentIndex(index);
   };
+
+  const handleDotPress = (index: number) => {
+    scrollRef.current?.scrollTo({ x: screenWidth * index, animated: true });
+  };
+
+  // Animate colors whenever currentIndex changes
+  useEffect(() => {
+    animatedValues.forEach((anim, i) => {
+      Animated.timing(anim, {
+        toValue: i === currentIndex ? 1 : 0,
+        duration: 200, // fade duration
+        useNativeDriver: false,
+      }).start();
+    });
+  }, [currentIndex]);
 
   return (
     <View style={[styles.container, { height }]}>
@@ -40,12 +65,21 @@ export default function Carousel({ slides, height }: CarouselProps) {
 
       {/* Dots indicator */}
       <View style={styles.dotsContainer}>
-        {slides.map((_, i) => (
-          <View
-            key={i}
-            style={[styles.dot, { opacity: i === currentIndex ? 1 : 0.3 }]}
-          />
-        ))}
+        {slides.map((_, i) => {
+          const backgroundColor = animatedValues[i].interpolate({
+            inputRange: [0, 1],
+            outputRange: ['#aaa', '#333'], // gray → dark gray
+          });
+          return (
+            <TouchableOpacity
+              key={i}
+              onPress={() => handleDotPress(i)}
+              activeOpacity={1}
+            >
+              <Animated.View style={[styles.dot, { backgroundColor }]} />
+            </TouchableOpacity>
+          );
+        })}
       </View>
     </View>
   );
@@ -74,10 +108,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#333',
-    marginHorizontal: 3,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    marginHorizontal: 4,
   },
 });
