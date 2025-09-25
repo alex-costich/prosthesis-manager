@@ -1,4 +1,3 @@
-// Connect.tsx
 import React, { useState, useRef, useEffect } from 'react';
 import {
   Image,
@@ -19,7 +18,8 @@ type RootStackParamList = {
   Dashboard: undefined;
 };
 
-const SIMULATE_CONNECTION = true; // <-- toggle simulation
+// Toggle local simulation (UI still calls the real connect API but in simulate mode)
+const SIMULATE_CONNECTION = true;
 
 const FLICKER_COUNT = 2;
 const FLICKER_DURATION = 150;
@@ -39,9 +39,9 @@ const Connect = () => {
   // Error flicker
   useEffect(() => {
     if (errorMessage) {
-      const flickerSequence: Animated.CompositeAnimation[] = [];
+      const seq: Animated.CompositeAnimation[] = [];
       for (let i = 0; i < FLICKER_COUNT; i++) {
-        flickerSequence.push(
+        seq.push(
           Animated.timing(errorOpacity, {
             toValue: 0.3,
             duration: FLICKER_DURATION / (FLICKER_COUNT * 4),
@@ -56,7 +56,7 @@ const Connect = () => {
           }),
         );
       }
-      flickerSequence.push(
+      seq.push(
         Animated.timing(errorOpacity, {
           toValue: 1,
           duration: 50,
@@ -70,7 +70,7 @@ const Connect = () => {
         useNativeDriver: true,
       }).start();
 
-      Animated.sequence(flickerSequence).start();
+      Animated.sequence(seq).start();
     } else {
       Animated.timing(errorOpacity, {
         toValue: 0,
@@ -82,8 +82,7 @@ const Connect = () => {
 
   // Spinner fade
   useEffect(() => {
-    let timeout: number;
-
+    let timeout: number | undefined;
     if (isConnecting && !errorMessage) {
       timeout = setTimeout(() => {
         Animated.timing(spinnerOpacity, {
@@ -99,15 +98,27 @@ const Connect = () => {
         useNativeDriver: true,
       }).start();
     }
-
-    return () => clearTimeout(timeout);
+    return () => {
+      if (timeout) clearTimeout(timeout);
+    };
   }, [isConnecting, errorMessage]);
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Error text */}
+      {/* Connection button */}
+      <ConnectionButton
+        setIsConnecting={setIsConnecting}
+        onError={msg => setErrorMessage(msg)}
+        onRetry={() => setErrorMessage(null)}
+        disabled={isConnecting}
+        simulateConnection={SIMULATE_CONNECTION}
+        onSuccess={() => navigation.replace('Dashboard')}
+      />
+
+      {/* Error overlay */}
       <Animated.View
-        style={[styles.statusContainer, { opacity: errorOpacity }]}
+        style={[styles.statusContainer, { opacity: errorOpacity, zIndex: 10 }]}
+        pointerEvents="none"
       >
         {errorMessage && (
           <>
@@ -123,24 +134,18 @@ const Connect = () => {
         )}
       </Animated.View>
 
-      {/* Spinner */}
+      {/* Spinner overlay */}
       <Animated.View
-        style={[styles.statusContainer, { opacity: spinnerOpacity }]}
+        style={[
+          styles.statusContainer,
+          { opacity: spinnerOpacity, zIndex: 10 },
+        ]}
+        pointerEvents="none"
       >
         {isConnecting && !errorMessage && (
           <ActivityIndicator size="large" color="#333" />
         )}
       </Animated.View>
-
-      {/* Connection button */}
-      <ConnectionButton
-        setIsConnecting={setIsConnecting}
-        onError={msg => setErrorMessage(msg)}
-        onRetry={() => setErrorMessage(null)}
-        disabled={isConnecting}
-        simulateConnection={SIMULATE_CONNECTION}
-        onSuccess={() => navigation.replace('Dashboard')}
-      />
     </SafeAreaView>
   );
 };
@@ -161,7 +166,7 @@ const styles = StyleSheet.create({
   error_subtitle: {
     fontSize: 13,
     textAlign: 'center',
-    width: '60%',
+    width: '55%',
     opacity: 0.6,
   },
 });
