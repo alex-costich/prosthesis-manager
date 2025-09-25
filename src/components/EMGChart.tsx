@@ -26,7 +26,7 @@ export default function SmoothEMGChartWithGrid({
   const samplesPerWindow = Math.floor(
     (windowTimeSec * 1000) / sampleIntervalMs,
   );
-  const chartWidth = screenWidth - 50; // leave space for Y-axis labels
+  const chartWidth = screenWidth - 100; // leave space for Y-axis labels
 
   const [data, setData] = useState<number[]>(
     Array(samplesPerWindow).fill((minY + maxY) / 2),

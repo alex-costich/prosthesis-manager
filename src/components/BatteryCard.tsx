@@ -13,7 +13,7 @@ const BatteryCard = ({ value = 80, size = 100, strokeWidth = 10 }) => {
       <View style={styles.circleContainer}>
         <Svg width={size} height={size}>
           <Circle
-            stroke="#bebebeff"
+            stroke="#c4c4c4ff"
             fill="none"
             cx={size / 2}
             cy={size / 2}
@@ -48,9 +48,9 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     padding: 10,
-    alignSelf: 'flex-end',
   },
   title: {
+    color: '#363636ff',
     fontSize: 14,
     fontWeight: 500,
     marginBottom: 8,
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
   value: {
     fontSize: 30,
     fontWeight: 400,
-    color: '#393535ff',
+    color: '#363636ff',
   },
 });
 

@@ -22,11 +22,12 @@ export default function SliderGroup() {
               minimumValue={0}
               maximumValue={180}
               value={val}
-              onSlidingComplete={v => handleChange(v, i)}
+              onValueChange={v => handleChange(v, i)}
               minimumTrackTintColor="#4e89c8"
               maximumTrackTintColor="#ccc"
               thumbTintColor="#4e89c8"
             />
+
             <Text style={[styles.label, { top: 115 }]}>{Math.round(val)}</Text>
           </View>
         ))}
@@ -61,7 +62,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-evenly',
     alignItems: 'center',
     width: '100%',
-    paddingHorizontal: 20,
+    paddingHorizontal: 40, // more padding decreases gap
   },
   sliderWrapper: { alignItems: 'center', flex: 1, position: 'relative' },
   label: {

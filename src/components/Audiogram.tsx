@@ -7,7 +7,7 @@ interface MicVisualizerProps {
   height?: number;
 }
 
-export default function MicVisualizer({
+export default function Audiogram({
   width = 300,
   height = 100,
 }: MicVisualizerProps) {
@@ -75,7 +75,7 @@ export default function MicVisualizer({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#dfdedeff',
+    backgroundColor: '#e0e0e0ff',
     borderRadius: 6,
     overflow: 'hidden',
   },

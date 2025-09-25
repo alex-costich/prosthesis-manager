@@ -1,7 +1,5 @@
-// ConnectionButton.tsx
 import React, { useRef } from 'react';
 import { TouchableOpacity, Animated, Easing, StyleSheet } from 'react-native';
-import { connectToDevices, ConnectionResult } from '../functions/bleConnection';
 import { useBLE } from '../context/BleContext';
 
 type Props = {
@@ -26,7 +24,7 @@ const ConnectionButton: React.FC<Props> = ({
   disabled,
   simulateConnection,
 }) => {
-  const { addData } = useBLE(); // 🔹 context live data
+  const { connectToDevices } = useBLE();
 
   const plugX = useRef(new Animated.Value(plugInitialPosition[1])).current;
   const plugY = useRef(new Animated.Value(plugInitialPosition[0])).current;
@@ -91,7 +89,7 @@ const ConnectionButton: React.FC<Props> = ({
     ]).start();
   };
 
-  const handlePress = () => {
+  const handlePress = async () => {
     onRetry?.();
     animateForward();
     setIsConnecting?.(true);
@@ -105,18 +103,15 @@ const ConnectionButton: React.FC<Props> = ({
       return;
     }
 
-    (async () => {
-      const result: ConnectionResult = await connectToDevices(addData); // 🔹 pass context setter
+    const success = await connectToDevices();
+    setIsConnecting?.(false);
 
-      setIsConnecting?.(false);
-
-      if (!result.success) {
-        onError(result.error || 'Unknown error occurred.');
-        animateBack();
-      } else {
-        onSuccess();
-      }
-    })();
+    if (!success) {
+      onError('Please ensure the prosthesis is nearby and powered on.');
+      animateBack();
+    } else {
+      onSuccess();
+    }
   };
 
   return (
@@ -124,6 +119,7 @@ const ConnectionButton: React.FC<Props> = ({
       style={styles.button}
       onPress={handlePress}
       disabled={disabled}
+      activeOpacity={0.85}
     >
       <Animated.Image
         source={require('../assets/plug.png')}
