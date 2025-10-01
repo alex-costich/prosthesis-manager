@@ -10,6 +10,7 @@ export type DeviceConfig = {
   serviceUUID: string; // main service UUID
   charTX: string; // notify characteristic
   charRX: string; // write characteristic
+  liveStateKey: string;
 };
 
 // Example configs – add more boards here:
@@ -20,13 +21,23 @@ export const DEVICE_CONFIGS: DeviceConfig[] = [
     serviceUUID: '6e400001-b5a3-f393-e0a9-e50e24dcca9e',
     charTX: '6e400003-b5a3-f393-e0a9-e50e24dcca9e',
     charRX: '6e400002-b5a3-f393-e0a9-e50e24dcca9e',
+    liveStateKey: 'sliders',
   },
   {
-    id: 'xiao',
-    namePrefix: 'XIAO', // or 'Nicla'
+    id: 'xiaoSenseA',
+    namePrefix: 'XIAOSENSEA',
     serviceUUID: '180C',
     charTX: '2a56',
     charRX: '2a57',
+    liveStateKey: 'emg',
+  },
+  {
+    id: 'xiaoSenseB',
+    namePrefix: 'XIAOSENSEB',
+    serviceUUID: '180C',
+    charTX: '2a56',
+    charRX: '2a57',
+    liveStateKey: 'voice',
   },
 ];
 
@@ -49,6 +60,7 @@ type BleContextType = {
   updateLiveState: (partial: Partial<LiveState>) => void;
   connectToDevices: () => Promise<boolean>;
   sendDataToDevice: (deviceId: string, data: string) => Promise<boolean>;
+  sendCommand: (deviceId: string, command: string) => Promise<boolean>; // NEW
 };
 
 const BleContext = createContext<BleContextType | undefined>(undefined);
@@ -214,6 +226,11 @@ export const BleProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
+  // ------------------- SEND COMMAND -------------------
+  const sendCommand = async (deviceId: string, command: string) => {
+    return await sendDataToDevice(deviceId, command);
+  };
+
   // ------------------- AUTO SEND LIVE STATE -------------------
   useEffect(() => {
     const interval = setInterval(() => {
@@ -232,7 +249,13 @@ export const BleProvider: React.FC<{ children: React.ReactNode }> = ({
 
   return (
     <BleContext.Provider
-      value={{ liveState, updateLiveState, connectToDevices, sendDataToDevice }}
+      value={{
+        liveState,
+        updateLiveState,
+        connectToDevices,
+        sendDataToDevice,
+        sendCommand,
+      }}
     >
       {children}
     </BleContext.Provider>

@@ -9,6 +9,7 @@ import Audiogram from '../components/Audiogram';
 import { useBLE } from '../context/BleContext';
 import Hand from '../components/Hand';
 import { RootStackParamList } from '../../types';
+import CalibrationButton from '../components/CalibrationButton';
 
 export default function Dashboard() {
   const { connectToDevices } = useBLE();
@@ -26,13 +27,7 @@ export default function Dashboard() {
     <View style={styles.container}>
       {/* Top row: logo left, battery right */}
       <View style={styles.topThirdContainer}>
-        <Pressable onPress={() => navigation.navigate('About')}>
-          <Image
-            source={require('../assets/logo.png')}
-            style={styles.logo}
-            resizeMode="contain"
-          />
-        </Pressable>
+        <CalibrationButton />
         <BatteryCard />
       </View>
 
